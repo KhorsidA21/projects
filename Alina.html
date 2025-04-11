@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Генератор Ласкавих Імен (Ukrainian Pet Name Generator)</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      background: linear-gradient(to right, #fff0f5, #ffe0ec);
+      padding: 40px 20px;
+    }
+    h1 {
+      color: #d81b60;
+      margin-bottom: 10px;
+    }
+    #petName {
+      font-size: 2em;
+      margin: 30px 0;
+      color: #880e4f;
+      transition: all 0.4s ease;
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    #petName.show {
+      opacity: 1;
+      transform: scale(1);
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 1em;
+      background-color: #f06292;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+      margin: 5px;
+    }
+    button:hover {
+      background-color: #ec407a;
+    }
+    #favorites {
+      margin-top: 30px;
+      font-size: 1.1em;
+      color: #6a1b9a;
+    }
+    #favorites ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    .fav-btn {
+      background: transparent;
+      border: none;
+      font-size: 1.5em;
+      color: #d81b60;
+      cursor: pointer;
+      vertical-align: middle;
+    }
+    .fav-btn:hover {
+      color: #ad1457;
+    }
+    @media (max-width: 600px) {
+      h1 { font-size: 1.5em; }
+      #petName { font-size: 1.5em; }
+      button { font-size: 0.9em; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Alina❤️... Генератор Ласкавих Імен</h1>
+  <p>Натисни, щоб отримати ласкаве ім’я та почути його українською!</p>
+  <div id="petName">—</div>
+  <button onclick="generateName()">Згенерувати</button>
+  <button class="fav-btn" onclick="saveFavorite()">❤️</button>
+  <button onclick="toggleSurpriseMode()">🎲 Сюрприз</button>
+
+  <div id="favorites">
+    <h3>Улюблені Імена:</h3>
+    <ul id="favList"></ul>
+  </div>
+
+  <script>
+    const names = [
+      { uk: "Зайчик", en: "Little Bunny" },
+      { uk: "Котик", en: "Kitten" },
+      { uk: "Сонечко", en: "Little Sun" },
+      { uk: "Мишеня", en: "Mousey" },
+      { uk: "Пташечка", en: "Little Bird" },
+      { uk: "Кицюня", en: "Cutie Cat" },
+      { uk: "Ластівка", en: "Swallow" },
+      { uk: "Рибка", en: "Little Fish" },
+      { uk: "Квіточка", en: "Little Flower" },
+      { uk: "Медуня", en: "Honey Pie" },
+      { uk: "Бусинка", en: "Little Bead" },
+      { uk: "Ягідка", en: "Little Berry" },
+      { uk: "Пупсик", en: "Pookie" },
+      { uk: "Зірочка", en: "Little Star" },
+      { uk: "Малишка", en: "Baby Girl" },
+      { uk: "Пончик", en: "Donut" },
+      { uk: "Смаколик", en: "Yummy Treat" },
+      { uk: "Цукерочка", en: "Candy" },
+      { uk: "Обіймашка", en: "Huggie" },
+      { uk: "Коханочка", en: "Sweetheart" },
+      { uk: "Манюня", en: "Tiny One" },
+      { uk: "Карамелька", en: "Caramel" },
+      { uk: "Капусняшка", en: "Cabbage Cutie" },
+      { uk: "Гусеничка", en: "Little Caterpillar" }
+    ];
+
+    let currentName = null;
+    let favorites = [];
+    let surpriseMode = false;
+    let surpriseInterval = null;
+
+    function generateName() {
+      const chosen = names[Math.floor(Math.random() * names.length)];
+      currentName = chosen;
+      const display = document.getElementById('petName');
+      display.textContent = `${chosen.uk} (${chosen.en})`;
+      display.classList.remove('show');
+      void display.offsetWidth;
+      display.classList.add('show');
+      speakUkrainian(chosen.uk);
+    }
+
+    function speakUkrainian(text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'uk-UA';
+      speechSynthesis.speak(utterance);
+    }
+
+    function saveFavorite() {
+      if (currentName && !favorites.some(fav => fav.uk === currentName.uk)) {
+        favorites.push(currentName);
+        updateFavorites();
+      }
+    }
+
+    function updateFavorites() {
+      const list = document.getElementById('favList');
+      list.innerHTML = '';
+      favorites.forEach(fav => {
+        const li = document.createElement('li');
+        li.textContent = `${fav.uk} (${fav.en})`;
+        list.appendChild(li);
+      });
+    }
+
+    function toggleSurpriseMode() {
+      surpriseMode = !surpriseMode;
+      if (surpriseMode) {
+        generateName();
+        surpriseInterval = setInterval(generateName, 4000);
+      } else {
+        clearInterval(surpriseInterval);
+      }
+    }
+  </script>
+
+</body>
+</html>

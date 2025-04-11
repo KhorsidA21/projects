@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Генератор Ласковых Прозвищ с GIF</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      background: linear-gradient(to right, #ffe4ec, #f8bbd0);
+      padding: 40px 20px;
+    }
+    h1 {
+      color: #d81b60;
+      margin-bottom: 10px;
+    }
+    #petName {
+      font-size: 2em;
+      margin: 30px 0;
+      color: #880e4f;
+      transition: all 0.4s ease;
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    #petName.show {
+      opacity: 1;
+      transform: scale(1);
+    }
+    #gifDisplay {
+      margin-top: 20px;
+      max-width: 300px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    #gifDisplay img {
+      max-width: 100%;
+      border-radius: 10px;
+      box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+      animation: popIn 0.6s ease-in-out;
+    }
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.8); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 1em;
+      background-color: #f06292;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+      margin: 5px;
+    }
+    button:hover {
+      background-color: #ec407a;
+    }
+    #favorites {
+      margin-top: 30px;
+      font-size: 1.1em;
+      color: #6a1b9a;
+    }
+    #favorites ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    .fav-btn {
+      background: transparent;
+      border: none;
+      font-size: 1.5em;
+      color: #d81b60;
+      cursor: pointer;
+      vertical-align: middle;
+    }
+    .fav-btn:hover {
+      color: #ad1457;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Dasha❤️... Генератор Ласковых Прозвищ с GIF</h1>
+  <p>Нажми, чтобы получить ласковое прозвище, увидеть GIF и услышать его по-русски!</p>
+  <div id="petName">—</div>
+  <div id="gifDisplay"><img id="gifImage" src="" alt="" style="display:none;"></div>
+  <button onclick="generateName()">Сгенерировать</button>
+  <button class="fav-btn" onclick="saveFavorite()">❤️</button>
+  <button onclick="toggleSurpriseMode()">🎲 Сюрприз</button>
+
+  <div id="favorites">
+    <h3>Избранные:</h3>
+    <ul id="favList"></ul>
+  </div>
+
+  <script>
+    const gifUrls = [
+      "https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif",
+      "https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif",
+      "https://media.giphy.com/media/l0ExncehJzexFpRHq/giphy.gif",
+      "https://media.giphy.com/media/xUA7aZeLE2e0P7Znz2/giphy.gif",
+      "https://media.giphy.com/media/mlvseq9yvZhba/giphy.gif",
+      "https://media.giphy.com/media/5VKbvrjxpVJCM/giphy.gif",
+      "https://media.giphy.com/media/l3q2K5jinAlChoCLS/giphy.gif",
+      "https://media.giphy.com/media/1xVhmnSP45LKM/giphy.gif",
+      "https://media.giphy.com/media/L95W4wv8nnb9K/giphy.gif",
+      "https://media.giphy.com/media/ToMjGpB9Wf8d2Uqk2RW/giphy.gif",
+      "https://media.giphy.com/media/xT77XZrTKOxycjaYvK/giphy.gif",
+      "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif",
+      "https://media.giphy.com/media/LmNwrBhejkK9EFP504/giphy.gif",
+      "https://media.giphy.com/media/5GoVLqeAOo6PK/giphy.gif",
+      "https://media.giphy.com/media/VbnUQpnihPSIgIXuZv/giphy.gif",
+      "https://media.giphy.com/media/xT0xeJpnrWC4XWblEk/giphy.gif",
+      "https://media.giphy.com/media/SKGo6OYe24EBG/giphy.gif",
+      "https://media.giphy.com/media/3og0IPxMM0erATueVW/giphy.gif",
+      "https://media.giphy.com/media/9J7tdYltWyXIY/giphy.gif",
+      "https://media.giphy.com/media/l0MYydaQ6A8WckJri/giphy.gif"
+    ];
+
+    const names = [
+      ["Зайчик", "Little Bunny"], ["Котёнок", "Kitten"], ["Солнышко", "Little Sun"],
+      ["Птичка", "Little Bird"], ["Киска", "Cutie Cat"], ["Рыбка", "Little Fish"],
+      ["Цветочек", "Little Flower"], ["Конфетка", "Candy"], ["Пончик", "Donut"],
+      ["Облачко", "Little Cloud"], ["Медвежонок", "Little Bear"], ["Ёжик", "Hedgehog"],
+      ["Плюшечка", "Sweet Bun"], ["Карамелька", "Caramel"], ["Малышка", "Baby Girl"],
+      ["Печенька", "Cookie"], ["Мурлыка", "Purring One"], ["Тигрёнок", "Tiger Cub"],
+      ["Сахарок", "Sugar"], ["Сладусик", "Sweetie"], ["Зефирка", "Marshmallow"],
+      ["Булочка", "Little Bun"], ["Крошка", "Tiny One"], ["Пушистик", "Fluffy One"],
+      ["Любимка", "Beloved"], ["Лисичка", "Little Fox"], ["Сердечко", "Little Heart"],
+      ["Мимими", "Mimimi"], ["Чудо", "Miracle"], ["Пупсик", "Pookie"],
+      ["Звёздочка", "Little Star"], ["Солнышек", "Sunny"], ["Лапочка", "Sweetie Pie"],
+      ["Снегурочка", "Snow Maiden"], ["Бусинка", "Bead"], ["Конфетулька", "Lil' Candy"],
+      ["Капелька", "Little Drop"], ["Вишенка", "Cherry"], ["Ромашка", "Daisy"], ["Няшка", "Cutie"]
+    ].map((item, index) => ({
+      ru: item[0],
+      en: item[1],
+      gif: gifUrls[index % gifUrls.length]
+    }));
+
+    let currentName = null;
+    let favorites = [];
+    let surpriseMode = false;
+    let surpriseInterval = null;
+
+    function generateName() {
+      const chosen = names[Math.floor(Math.random() * names.length)];
+      currentName = chosen;
+      const display = document.getElementById('petName');
+      const gifImage = document.getElementById('gifImage');
+      display.textContent = `${chosen.ru} (${chosen.en})`;
+      gifImage.src = chosen.gif;
+      gifImage.style.display = 'block';
+      display.classList.remove('show');
+      void display.offsetWidth;
+      display.classList.add('show');
+      speakRussian(chosen.ru);
+    }
+
+    function speakRussian(text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'ru-RU';
+      speechSynthesis.speak(utterance);
+    }
+
+    function saveFavorite() {
+      if (currentName && !favorites.some(fav => fav.ru === currentName.ru)) {
+        favorites.push(currentName);
+        updateFavorites();
+      }
+    }
+
+    function updateFavorites() {
+      const list = document.getElementById('favList');
+      list.innerHTML = '';
+      favorites.forEach(fav => {
+        const li = document.createElement('li');
+        li.textContent = `${fav.ru} (${fav.en})`;
+        list.appendChild(li);
+      });
+    }
+
+    function toggleSurpriseMode() {
+      surpriseMode = !surpriseMode;
+      if (surpriseMode) {
+        generateName();
+        surpriseInterval = setInterval(generateName, 4000);
+      } else {
+        clearInterval(surpriseInterval);
+      }
+    }
+  </script>
+
+</body>
+</html>

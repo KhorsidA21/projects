@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Russian Pet Name Generator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      background: linear-gradient(to right, #ffe4ec, #ffe4f0);
+      padding: 40px 20px;
+    }
+    h1 {
+      color: #d81b60;
+      margin-bottom: 10px;
+    }
+    #petName {
+      font-size: 2em;
+      margin: 30px 0;
+      color: #880e4f;
+      transition: all 0.4s ease;
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    #petName.show {
+      opacity: 1;
+      transform: scale(1);
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 1em;
+      background-color: #f06292;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+      margin: 5px;
+    }
+    button:hover {
+      background-color: #ec407a;
+    }
+    #favorites {
+      margin-top: 30px;
+      font-size: 1.1em;
+      color: #6a1b9a;
+    }
+    #favorites ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    .fav-btn {
+      background: transparent;
+      border: none;
+      font-size: 1.5em;
+      color: #d81b60;
+      cursor: pointer;
+      vertical-align: middle;
+    }
+    .fav-btn:hover {
+      color: #ad1457;
+    }
+    @media (max-width: 600px) {
+      h1 { font-size: 1.5em; }
+      #petName { font-size: 1.5em; }
+      button { font-size: 0.9em; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Dasha❤️... Russian Pet Name Generator</h1>
+  <p>Click to get a nickname + hear it in Russian!</p>
+  <div id="petName">—</div>
+  <button onclick="generateName()">Generate</button>
+  <button class="fav-btn" onclick="saveFavorite()">❤️</button>
+  <button onclick="toggleSurpriseMode()">🎲 Surprise Me</button>
+
+  <div id="favorites">
+    <h3>Saved Favorites:</h3>
+    <ul id="favList"></ul>
+  </div>
+
+  <script>
+    const names = [
+      { ru: "Медвежонок", en: "Little Bear" },
+      { ru: "Котёнок", en: "Kitten" },
+      { ru: "Зайчик", en: "Little Bunny" },
+      { ru: "Солнышко", en: "Little Sun" },
+      { ru: "Пирожочек", en: "Little Pie" },
+      { ru: "Рыбка", en: "Little Fish" },
+      { ru: "Тигрёнок", en: "Tiger Cub" },
+      { ru: "Пушистик", en: "Fluffy One" },
+      { ru: "Облачко", en: "Little Cloud" },
+      { ru: "Бублик", en: "Little Bagel" },
+      { ru: "Вафелька", en: "Little Waffle" },
+      { ru: "Плюшечка", en: "Sweet Bun" },
+      { ru: "Ёжик", en: "Hedgehog" },
+      { ru: "Кисонька", en: "Cutie Cat" },
+      { ru: "Крошка", en: "Tiny One" },
+      { ru: "Пельмешек", en: "Little Dumpling" },
+      { ru: "Мимимишка", en: "Mimimi Bear" },
+      { ru: "Снежинка", en: "Snowflake" },
+      { ru: "Конфеточка", en: "Little Candy" },
+      { ru: "Зефирка", en: "Marshmallow" },
+      { ru: "Лапочка", en: "Sweetie Pie" },
+      { ru: "Малышка", en: "Baby Girl" },
+      { ru: "Жемчужинка", en: "Little Pearl" },
+      { ru: "Карамелька", en: "Caramel" },
+      { ru: "Вареник", en: "Little Dumpling" },
+      { ru: "Лисичка", en: "Little Fox" },
+      { ru: "Моя Вселенная", en: "My Universe" },
+      { ru: "Бусинка", en: "Little Bead" },
+      { ru: "Клубничка", en: "Strawberry" },
+      { ru: "Радужка", en: "Rainbow" },
+      { ru: "Манюня", en: "Tiny One" },
+      { ru: "Котлета", en: "Cutlet" }
+    ];
+
+    let currentName = null;
+    let favorites = [];
+    let surpriseMode = false;
+    let surpriseInterval = null;
+
+    function generateName() {
+      const chosen = names[Math.floor(Math.random() * names.length)];
+      currentName = chosen;
+      const display = document.getElementById('petName');
+      display.textContent = `${chosen.ru} (${chosen.en})`;
+      display.classList.remove('show');
+      void display.offsetWidth;
+      display.classList.add('show');
+      speakRussian(chosen.ru);
+    }
+
+    function speakRussian(text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'ru-RU';
+      speechSynthesis.speak(utterance);
+    }
+
+    function saveFavorite() {
+      if (currentName && !favorites.some(fav => fav.ru === currentName.ru)) {
+        favorites.push(currentName);
+        updateFavorites();
+      }
+    }
+
+    function updateFavorites() {
+      const list = document.getElementById('favList');
+      list.innerHTML = '';
+      favorites.forEach(fav => {
+        const li = document.createElement('li');
+        li.textContent = `${fav.ru} (${fav.en})`;
+        list.appendChild(li);
+      });
+    }
+
+    function toggleSurpriseMode() {
+      surpriseMode = !surpriseMode;
+      if (surpriseMode) {
+        generateName();
+        surpriseInterval = setInterval(generateName, 4000);
+      } else {
+        clearInterval(surpriseInterval);
+      }
+    }
+  </script>
+
+</body>
+</html>
